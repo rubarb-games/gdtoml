@@ -1,0 +1,12 @@
+[configuration]
+
+entry_symbol = "example_library_init"
+compatibility_minimum = "4.5"
+reloadable = true
+
+[libraries]
+windows.x86_64.debug = "gdtoml.windows.template_debug.x86_64.dll"
+windows.x86_64.release = "gdtoml.windows.template_release.x86_64.dll"
+
+linux.x86_64.debug = "gdtoml.linux.template_debug.x86_64.so"
+linux.x86_64.release = "gdtoml.linux.template_release.x86_64.so"

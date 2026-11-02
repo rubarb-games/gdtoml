@@ -6,7 +6,7 @@ import sys
 
 target = ARGUMENTS.get("target", "template_debug")
 
-libname = "asdf"
+libname = "gdtoml"
 projectdir = "godot"
 
 localEnv = Environment(tools=["default"], PLATFORM="")
@@ -19,13 +19,59 @@ localEnv.Tool("compilation_db")
 # Use absolute paths in compile_commands.json.
 localEnv["COMPILATIONDB_USE_ABSPATH"] = True
 
+
+localEnv.Append(
+    # C++ standard
+    CXXFLAGS = [
+        "-std=c++20",
+    ],
+)
+
+if localEnv["target"] == "template_debug":
+    localEnv.Append(
+        CCFLAGS = [
+            "-O0",
+            "-g3",
+            "-fno-omit-frame-pointer",
+            # "-Wpedantic",
+            # "-Wshadow",
+            # "-Wsign-conversion",
+            # "-fsanitize=address,undefined",
+        ],
+
+        # LINKFLAGS = [
+        #     "-fsanitize=address,undefined",
+        # ],
+
+        # SHLINKFLAGS = [
+        #     "-fsanitize=address,undefined",
+        # ],
+    )
+
+elif localEnv["target"] == "template_release":
+    localEnv.Append(
+        CCFLAGS = [
+            "-O3",
+            "-DNDEBUG",
+            "-flto",
+            "-w",
+        ],
+        LINKFLAGS = [
+            "-flto",
+        ],
+        SHLINKFLAGS = [
+            "-flto",
+        ],
+    )
+
+
 # Build profiles can be used to decrease compile times.
 # You can either specify "disabled_classes", OR
 # explicitly specify "enabled_classes" which disables all other classes.
 # Modify the example file as needed and uncomment the line below or
 # manually specify the build_profile parameter when running SCons.
 
-# localEnv["build_profile"] = "build_profile.json"
+localEnv["build_profile"] = "build_profile.json"
 
 # customs = ["custom.py"]
 # customs = [os.path.abspath(path) for path in customs]
