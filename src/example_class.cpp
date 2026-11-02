@@ -1,4 +1,5 @@
 #include "example_class.h"
+#include "toml++/impl/node_view.hpp"
 
 void ExampleClass::_bind_methods() {
     godot::ClassDB::bind_method(D_METHOD("print_type", "variant"), &ExampleClass::print_type);
@@ -45,6 +46,53 @@ void ExampleClass::print_type(const Variant &p_variant) const {
     print_line(vformat("Type: %d", p_variant.get_type()));
 }
 
+// get_string_arr(path)
 void ExampleClass::hello() const {
-    print_line("Hello");
+    static constexpr auto source = R"(
+        str = "hello world"
+
+        numbers = [ 1, 2, 3, "four", 5.0 ]
+        vegetables = [ "tomato", "onion", "mushroom", "lettuce" ]
+        minerals = [ "quartz", "iron", "copper", "diamond" ]
+
+        [animals]
+        cats = [ "tiger", true, "lion", "puma" ]
+        birds = [ "macaw", "pigeon", "canary" ]
+        fish = [ "salmon", "trout", "carp" ]
+    )";
+
+    toml::parse_result result = toml::parse(source);
+
+    if (!result.succeeded()) {
+        print_line("Cannot parse");
+        return;
+    }
+
+    auto cats = result.table().at_path("animals.cats").as_array();
+    for (auto&& node : *cats) {
+        std::optional<std::string> s = node.value<std::string>();
+        if (!s.has_value()) {
+            continue;
+        }
+        print_line(s->c_str());
+    }
+
+    auto a = result.table().at_path("animals");
+    if (a.is_table()) {
+        for (auto&& [key, value] : *a.as_table()) {
+            print_line(key.data());
+        }
+    }
+
+    // toml::table* animals = result.table().at_path("animals").as_table();
+    // animals->prune(); // removes empty nodes
+
+    bool contains = result.table().contains("asdf");
+    if (!contains) {
+        print_line("doc has no key 'asdf'");
+    }
+
+
+    // auto i = result.table().get_as<int>("str");
+    
 }
