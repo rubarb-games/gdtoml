@@ -1,0 +1,69 @@
+# --- Compile Flags Configuration ---
+CompileFlags:
+  CompilationDatabase: .
+  # Add flags for all files in the project
+  Add: [
+    "-std=c++20",          # Force the compiler to use C++20
+    "-Wall",               # Enable all standard warnings
+    "-Wextra",             # Enable extra warnings
+    "-Iinclude"            # Project specific include directory
+    "-I/usr/local/include" # Add a global include directory
+  ]
+  # Remove flags that might break or confuse the language server
+  Remove: [
+    "-fno-fat-lto-objects",
+    "-mno-speculative-load-hardening"
+  ]
+  # When no compile_commands.json is found, treat headers as C++
+  Compiler: clang++
+
+# --- Indexing Behavior ---
+Index:
+  # Perform background indexing to enable global go-to-definition and references
+  Background: Build
+
+# --- Code Diagnostics & Linter ---
+Diagnostics:
+  # Treat unused includes strictly (will flag them as warnings)
+  UnusedIncludes: Strict
+  
+  # Suppress specific compiler warnings by their diagnostic flag name
+  Suppress: [
+    "unused-parameter",
+    "missing-field-initializers"
+  ]
+
+  # Configure integrated Clang-Tidy checks
+  ClangTidy:
+    Add: [
+      "bugprone-*",
+      "modernize-*",
+      "performance-*",
+      "cppcoreguidelines-*",
+      "readability-identifier-naming"
+    ]
+    Remove: [
+      "modernize-use-trailing-return-type"
+    ]
+    CheckOptions:
+      readability-identifier-naming.VariableCase: camelCase
+      readability-identifier-naming.FunctionCase: camelCase
+
+# --- Inline Editor Hints ---
+InlayHints:
+  # Toggle visual hints inside your editor window
+  Enabled: Yes
+  ParameterNames: Yes
+  DeducedTypes: Yes
+  Designators: Yes
+
+# --- Conditional Project Mapping (Optional) ---
+# You can isolate configurations to specific subdirectories using 'If'
+---
+If:
+  PathMatch: third_party/.*
+Diagnostics:
+  # Relax code checking constraints for external dependency folders
+  UnusedIncludes: None
+  ClangTidy:
+    Remove: ["*"]

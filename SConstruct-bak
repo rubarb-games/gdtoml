@@ -1,0 +1,158 @@
+
+import os
+
+# --------------------------------------------------
+# Build configuration
+# --------------------------------------------------
+
+libname = "my_extension"
+install_dir = ARGUMENTS.get("dest", "dist")
+
+# --------------------------------------------------
+# Base compiler environment
+# --------------------------------------------------
+
+local_env = Environment(
+    tools = ["default"],
+    PLATFORM = "",
+    # ENV = {
+    #     "PATH": os.environ.get("PATH", ""),
+    # },
+    # CC = "clang",
+    # CXX = "clang++",
+    # LINK = "clang++",
+)
+
+
+# local_env.Append(
+#     # C++ standard
+#     CXXFLAGS = [
+#         "-std=c++20",
+#     ],
+
+#     # Common warnings
+#     CCFLAGS = [
+#         "-Wall",
+#         "-Wextra",
+#         "-Wconversion",
+#     ],
+
+#     # Use mold through the Clang linker driver
+#     # LINKFLAGS = [
+#     #     "-fuse-ld=mold",
+#     # ],
+
+#     # SHLINKFLAGS = [
+#     #     "-fuse-ld=mold",
+#     # ],
+# )
+
+# --------------------------------------------------
+# Integrate godot-cpp
+# --------------------------------------------------
+
+target = ARGUMENTS.get("target", "template_debug")
+
+local_env["target"] = target
+
+env = SConscript(
+    "godot-cpp/SConstruct",
+    {
+        "env": local_env,
+        "api_version": "4.5",
+    }
+)
+
+# --------------------------------------------------
+# Development configuration
+# --------------------------------------------------
+
+if env["target"] == "template_debug":
+    env.Append(
+        CCFLAGS = [
+            "-O0",
+            "-g3",
+            "-fno-omit-frame-pointer",
+            "-Wpedantic",
+            "-Wshadow",
+            "-Wsign-conversion",
+            "-fsanitize=address,undefined",
+        ],
+
+        LINKFLAGS = [
+            "-fsanitize=address,undefined",
+        ],
+
+        SHLINKFLAGS = [
+            "-fsanitize=address,undefined",
+        ],
+    )
+
+# --------------------------------------------------
+# Release configuration
+# --------------------------------------------------
+
+elif env["target"] == "template_release":
+    env.Append(
+        CCFLAGS = [
+            "-O3",
+            "-DNDEBUG",
+            "-flto",
+            "-w",
+        ],
+        LINKFLAGS = [
+            "-flto",
+        ],
+        SHLINKFLAGS = [
+            "-flto",
+        ],
+    )
+
+# --------------------------------------------------
+# Include directories
+# --------------------------------------------------
+
+env.Append(CPPPATH = [
+    "#/include",
+    "#/src",
+])
+
+sources = Glob("src/**/*.cpp", source=True)
+
+library = env.SharedLibrary(
+    target = "build/my_extension",
+    source = sources,
+)
+
+# --------------------------------------------------
+# Build shared library
+# --------------------------------------------------
+
+suffix = env["suffix"].replace(".dev", "").replace(".universal", "")
+
+lib_filename = "{}{}{}{}".format(
+    env.subst("$SHLIBPREFIX"),
+    libname,
+    suffix,
+    env.subst("$SHLIBSUFFIX"),
+)
+print(lib_filename)
+
+library = env.SharedLibrary(
+    target = os.path.join("build", env["platform"], lib_filename),
+    source = sources,
+)
+
+# --------------------------------------------------
+# Installation
+# --------------------------------------------------
+
+installed = env.Install(
+    "godot/addons/asdf/bin",
+    library,
+)
+
+env.Alias("install", installed)
+
+# Default target
+Default(library)

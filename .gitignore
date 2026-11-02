@@ -1,0 +1,4 @@
+bin
+godot-cpp
+*.sublime-workspace
+.sconsign*.dblite
