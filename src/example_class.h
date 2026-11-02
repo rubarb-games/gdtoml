@@ -22,6 +22,9 @@ public:
     ExampleClass();
     ~ExampleClass() override = default;
 
+    bool try_parse(const String &p_content);
+    String get_string(const String &p_key);
+    // --
     void print_type(const Variant &p_variant) const;
     void hello() const;
 };
