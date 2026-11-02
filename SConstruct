@@ -51,10 +51,13 @@ if localEnv["target"] == "template_debug":
 elif localEnv["target"] == "template_release":
     localEnv.Append(
         CCFLAGS = [
-            "-O3",
+            "-Os", # optimize for size
+            "-s", # strip symbol table
             "-DNDEBUG",
-            "-flto",
+            #"-flto", # (Link-Time Optimization) — Enables cross-file optimization to remove dead code and inline small functions.
             "-w",
+            "-fno-exceptions",
+            # "-fno-rtti"  # Disables C++ exception handling and Run-Time Type Information, which drastically cuts down runtime overhead (note: ensure your code doesn't actually throw exceptions)
         ],
         LINKFLAGS = [
             "-flto",
