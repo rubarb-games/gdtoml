@@ -28,3 +28,25 @@ void TomlWriter::log(const std::string& p_msg) const {
     std::string s = static_cast<std::string>(fmt::sprintf("[gdtoml.toml_reader] {}", p_msg));
     UtilityFunctions::print(utils::to_string(s));
 }
+
+String TomlWriter::serialize() {}
+
+bool TomlWriter::set_string(const String& p_key, const String& p_value) {}
+
+bool TomlWriter::set_int(const String& p_key, const int& p_value) {}
+
+bool TomlWriter::set_float(const String& p_key, const float& p_value) {}
+
+bool TomlWriter::set_bool(const String& p_key, const bool& p_value) {}
+
+bool TomlWriter::set_array(const String& p_key, const Array& p_array) {}
+
+bool TomlWriter::set_table(const String& p_key, const Dictionary& p_table) {}
+
+bool TomlWriter::append_to_array(const String& p_key, const Variant& p_value) {}
+
+bool TomlWriter::erase_from_array(const String& p_key, const Variant& p_value) {}
+
+bool TomlWriter::remove(const String& p_key) {}
+
+void TomlWriter::prune() {}
