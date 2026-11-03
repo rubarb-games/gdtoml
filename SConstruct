@@ -30,8 +30,8 @@ localEnv.Append(
 if localEnv["target"] == "template_debug":
     localEnv.Append(
         CCFLAGS = [
-            "-O0",
-            "-g3",
+            "-O0", # no optimization
+            "-g3", # max debug symbols
             "-fno-omit-frame-pointer",
             # "-Wpedantic",
             # "-Wshadow",
@@ -51,8 +51,9 @@ if localEnv["target"] == "template_debug":
 elif localEnv["target"] == "template_release":
     localEnv.Append(
         CCFLAGS = [
-            "-Os", # optimize for size
+            "-O1", # optimize low hanging fruits
             "-s", # strip symbol table
+            "-g0", # no debug symbols
             "-DNDEBUG",
             #"-flto", # (Link-Time Optimization) — Enables cross-file optimization to remove dead code and inline small functions.
             "-w",
@@ -96,6 +97,7 @@ Run the following command to download godot-cpp:
 env = SConscript("godot-cpp/SConstruct", {"api_version": 4.5, "env": env})
 
 env.Append(
+    CPPDEFINES=["FMT_HEADER_ONLY"],
     CPPPATH = [
         "#/include",
         "#/src",
