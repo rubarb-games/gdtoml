@@ -1,0 +1,28 @@
+alone = true
+# inline table
+my_name = { first = "Thomas", last = "Viktil" }
+
+[general]
+width = 100
+height = 200
+plugins = ["this", "that"]
+random = [1, 2.5, false, "string"]
+
+[general.audio]
+volume = 0.5
+sfx = 0.8
+
+# This is a table of tables
+[level.one]
+name = "First level"
+
+[level.two]
+name = "Second level"
+
+# This is an array of tables
+[[enemy]]
+name = "Peasant"
+
+[[enemy]]
+name = "Accountant"
+
