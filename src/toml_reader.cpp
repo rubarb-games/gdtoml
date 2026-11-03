@@ -7,25 +7,7 @@
 #include <cstdint>
 #include <string_view>
 
-inline std::string TomlReader::to_str(const String& p_string) {
-    return p_string.utf8().get_data();
-}
-
-inline String TomlReader::to_string(const std::optional<std::string>& p_optional) {
-    return to_string(p_optional.value());
-}
-
-inline String TomlReader::to_string(const std::string& p_string) {
-    return {p_string.c_str()};
-}
-
-inline String TomlReader::to_string(const std::optional<std::string_view>& p_optional) {
-    return to_string(p_optional.value());
-}
-
-inline String TomlReader::to_string(const std::string_view& p_string_view) {
-    return String::utf8(p_string_view.data(), static_cast<int64_t>(p_string_view.size()));
-}
+#include "utils.h"
 
 // Forward declarations
 Variant to_variant(const toml::node& node);
@@ -44,7 +26,7 @@ Dictionary TomlReader::to_dictionary(const toml::table& table) {
     Dictionary dict;
 
     for (auto&& [key, value] : table) {
-        dict[to_string(key.str())] = to_variant(value);
+        dict[utils::to_string(key.str())] = to_variant(value);
     }
 
     return dict;
@@ -54,24 +36,24 @@ Variant TomlReader::to_variant(const toml::node& node) {
     switch (node.type()) {
         case toml::node_type::table:            { return to_dictionary(*node.as_table()); }
         case toml::node_type::array:            { return to_array(*node.as_array()); }
-        case toml::node_type::string:           { return to_string(node.value<std::string_view>()); }
+        case toml::node_type::string:           { return utils::to_string(node.value<std::string_view>()); }
         case toml::node_type::integer:          { return node.value<int64_t>().value(); }
         case toml::node_type::floating_point:   { return node.value<double>().value(); }
         case toml::node_type::boolean:          { return node.value<bool>().value(); }
         case toml::node_type::date: {
             std::ostringstream stream;
             stream << node.value<toml::date>().value();
-            return to_string(stream.str());
+            return utils::to_string(stream.str());
         }
         case toml::node_type::time: {
             std::ostringstream stream;
             stream << node.value<toml::time>().value();
-            return to_string(stream.str());
+            return utils::to_string(stream.str());
         }
         case toml::node_type::date_time: {
             std::ostringstream stream;
             stream << node.value<toml::date_time>().value();
-            return to_string(stream.str());
+            return utils::to_string(stream.str());
         }
         default: {
             return {};
@@ -119,17 +101,17 @@ void TomlReader::log(const std::string& p_msg) const {
         return;
     }
     std::string s = static_cast<std::string>(fmt::sprintf("[gdtoml.toml_reader] {}", p_msg));
-    UtilityFunctions::print(to_string(s));
+    UtilityFunctions::print(utils::to_string(s));
 }
 
 bool TomlReader::exists(const String& p_key) const {
     if (!tbl) {
-        log(fmt::sprintf("No TOML document parsed. Cannot find key '{}'. Run try_parse first.", to_str(p_key)));
+        log(fmt::sprintf("No TOML document parsed. Cannot find key '{}'. Run try_parse first.", utils::to_str(p_key)));
         return false;
     }
 
-    if (tbl->at_path(to_str(p_key)).node() == nullptr) {
-        log(fmt::sprintf("TOML document does not contain key '{}'.", to_str(p_key)));
+    if (tbl->at_path(utils::to_str(p_key)).node() == nullptr) {
+        log(fmt::sprintf("TOML document does not contain key '{}'.", utils::to_str(p_key)));
         return false;
     }
 
@@ -137,7 +119,7 @@ bool TomlReader::exists(const String& p_key) const {
 }
 
 bool TomlReader::try_parse(const String& p_content) {
-    std::string content_str = to_str(p_content);
+    std::string content_str = utils::to_str(p_content);
     toml::parse_result result = toml::parse(content_str);
 
     if (!result) {
@@ -160,13 +142,13 @@ String TomlReader::get_string_or(const String& p_key, const String& p_default) c
         return p_default;
     }
 
-    std::optional<std::string> val = tbl->at_path(to_str(p_key)).value<std::string>();
+    std::optional<std::string> val = tbl->at_path(utils::to_str(p_key)).value<std::string>();
     if (!val.has_value()) {
-        log(fmt::sprintf("Key '{}' is not a string", to_str(p_key)));
+        log(fmt::sprintf("Key '{}' is not a string", utils::to_str(p_key)));
         return p_default;
     }
 
-    return to_string(val);
+    return utils::to_string(val);
 }
 
 TypedArray<String> TomlReader::get_string_arr(const String& p_key) const {
@@ -174,10 +156,10 @@ TypedArray<String> TomlReader::get_string_arr(const String& p_key) const {
         return {};
     }
 
-    toml::node_view<toml::node> node = tbl->at_path(to_str(p_key));
+    toml::node_view<toml::node> node = tbl->at_path(utils::to_str(p_key));
 
     if (!node.is_array()) {
-        log(fmt::sprintf("Key '{}' is not an array.", to_str(p_key)));
+        log(fmt::sprintf("Key '{}' is not an array.", utils::to_str(p_key)));
         return {};
     }
     
@@ -207,9 +189,9 @@ int64_t TomlReader::get_int_or(const String& p_key, const int64_t& p_default) co
         return p_default;
     }
 
-    std::optional<int64_t> val = tbl->at_path(to_str(p_key)).value<int64_t>();
+    std::optional<int64_t> val = tbl->at_path(utils::to_str(p_key)).value<int64_t>();
     if (!val.has_value()) {
-        log(fmt::sprintf("Key '{}' is not an int", to_str(p_key)));
+        log(fmt::sprintf("Key '{}' is not an int", utils::to_str(p_key)));
         return p_default;
     }
 
@@ -221,10 +203,10 @@ TypedArray<int64_t> TomlReader::get_int_arr(const String& p_key) const {
         return {};
     }
 
-    toml::node_view<toml::node> node = tbl->at_path(to_str(p_key));
+    toml::node_view<toml::node> node = tbl->at_path(utils::to_str(p_key));
     
     if (!node.is_array()) {
-        log(fmt::sprintf("Key '{}' is not an array.", to_str(p_key)));
+        log(fmt::sprintf("Key '{}' is not an array.", utils::to_str(p_key)));
         return {};
     }
     
@@ -254,9 +236,9 @@ float TomlReader::get_float_or(const String& p_key, const float& p_default) cons
         return p_default;
     }
 
-    std::optional<float> val = tbl->at_path(to_str(p_key)).value<float>();
+    std::optional<float> val = tbl->at_path(utils::to_str(p_key)).value<float>();
     if (!val.has_value()) {
-        log(fmt::sprintf("Key '{}' is not a float", to_str(p_key)));
+        log(fmt::sprintf("Key '{}' is not a float", utils::to_str(p_key)));
         return p_default;
     }
 
@@ -268,10 +250,10 @@ TypedArray<float> TomlReader::get_float_arr(const String& p_key) const {
         return {};
     }
 
-    toml::node_view<toml::node> node = tbl->at_path(to_str(p_key));
+    toml::node_view<toml::node> node = tbl->at_path(utils::to_str(p_key));
     
     if (!node.is_array()) {
-        log(fmt::sprintf("Key '{}' is not an array.", to_str(p_key)));
+        log(fmt::sprintf("Key '{}' is not an array.", utils::to_str(p_key)));
         return {};
     }
     
@@ -301,9 +283,9 @@ bool TomlReader::get_bool_or(const String& p_key, const bool& p_default) const {
         return p_default;
     }
 
-    std::optional<bool> val = tbl->at_path(to_str(p_key)).value<bool>();
+    std::optional<bool> val = tbl->at_path(utils::to_str(p_key)).value<bool>();
     if (!val.has_value()) {
-        log(fmt::sprintf("Key '{}' is not a bool", to_str(p_key)));
+        log(fmt::sprintf("Key '{}' is not a bool", utils::to_str(p_key)));
         return p_default;
     }
 
@@ -315,10 +297,10 @@ TypedArray<bool> TomlReader::get_bool_arr(const String& p_key) const {
         return {};
     }
 
-    toml::node_view<toml::node> node = tbl->at_path(to_str(p_key));
+    toml::node_view<toml::node> node = tbl->at_path(utils::to_str(p_key));
     
     if (!node.is_array()) {
-        log(fmt::sprintf("Key '{}' is not an array.", to_str(p_key)));
+        log(fmt::sprintf("Key '{}' is not an array.", utils::to_str(p_key)));
         return {};
     }
     
@@ -344,10 +326,10 @@ Array TomlReader::get_array(const String& p_key) const {
         return {};
     }
 
-    toml::node_view<toml::node> node = tbl->at_path(to_str(p_key));
+    toml::node_view<toml::node> node = tbl->at_path(utils::to_str(p_key));
     
     if (!node.is_array()) {
-        log(fmt::sprintf("Key '{}' is not an array.", to_str(p_key)));
+        log(fmt::sprintf("Key '{}' is not an array.", utils::to_str(p_key)));
         return {};
     }
     
@@ -366,10 +348,10 @@ Dictionary TomlReader::get_table(const String& p_key) const {
         return {};
     }
 
-    toml::node_view<toml::node> node = tbl->at_path(to_str(p_key));
+    toml::node_view<toml::node> node = tbl->at_path(utils::to_str(p_key));
     
     if (!node.is_table()) {
-        log(fmt::sprintf("Key '{}' is not a table.", to_str(p_key)));
+        log(fmt::sprintf("Key '{}' is not a table.", utils::to_str(p_key)));
         return {};
     }
 
@@ -381,16 +363,16 @@ TypedArray<String> TomlReader::get_table_keys(const String& p_key) const {
         return {};
     }
 
-    toml::node_view<toml::node> node = tbl->at_path(to_str(p_key));
+    toml::node_view<toml::node> node = tbl->at_path(utils::to_str(p_key));
     
     if (!node.is_table()) {
-        log(fmt::sprintf("Key '{}' is not a table.", to_str(p_key)));
+        log(fmt::sprintf("Key '{}' is not a table.", utils::to_str(p_key)));
         return {};
     }
 
     TypedArray<String> keys = {};
     for (auto&& [key, value] : *node.as_table()) {
-        keys.append(to_string(key.str()));
+        keys.append(utils::to_string(key.str()));
     }
 
     return keys;

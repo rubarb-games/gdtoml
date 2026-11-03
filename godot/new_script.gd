@@ -2,6 +2,8 @@ extends Node
 
 func _ready() -> void:
 	var reader: TomlReader = TomlReader.new()
+	reader.enable_log(Toml.enable_logging())
+	
 	var code: int = Toml.parse_file(reader, ["res://sample.toml"])
 	if code != OK:
 		printerr(error_string(code))

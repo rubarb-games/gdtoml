@@ -1,5 +1,8 @@
 extends Node
 
+func enable_logging() -> bool:
+	return ProjectSettings.get_setting("gdtoml/logging") as bool
+
 func parse_file(p_reader: TomlReader, p_paths: Array[String]) -> int:
 	for path: String in p_paths:
 		var file = FileAccess.open(path, FileAccess.READ)

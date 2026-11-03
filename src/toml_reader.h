@@ -21,12 +21,6 @@ private:
     bool log_enabled;
     void log(const std::string& p_msg) const;
 
-    static std::string to_str(const String& p_string);
-    static String to_string(const std::optional<std::string>& p_optional);
-    static String to_string(const std::string& p_string);
-    static String to_string(const std::optional<std::string_view>& p_optional);
-    static String to_string(const std::string_view& p_string_view);
-
     static Variant to_variant(const toml::node& node);
     static Array to_array(const toml::array& toml_array);
     static Dictionary to_dictionary(const toml::table& table);

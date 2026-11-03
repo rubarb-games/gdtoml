@@ -6,6 +6,7 @@
 #include <godot_cpp/godot.hpp>
 
 #include "toml_reader.h"
+#include "toml_writer.h"
 
 using namespace godot;
 
@@ -15,6 +16,7 @@ void initialize_gdextension_types(ModuleInitializationLevel p_level)
         return;
     }
     GDREGISTER_CLASS(TomlReader);
+    GDREGISTER_CLASS(TomlWriter);
 }
 
 void uninitialize_gdextension_types(ModuleInitializationLevel p_level) {
