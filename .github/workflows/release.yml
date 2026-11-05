@@ -32,6 +32,9 @@ jobs:
     runs-on: ${{ matrix.target.os }}
     steps:
 
+      - name: Ensure MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
       - name: Setup Python (for SCons)
         uses: actions/setup-python@v5
         with:
