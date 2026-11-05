@@ -15,9 +15,10 @@ jobs:
         # See https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/running-variations-of-jobs-in-a-workflow
         target:
           [
-            { platform: linux, arch: x86_64, os: ubuntu-22.04 },
+            # { platform: linux, arch: x86_64, os: ubuntu-22.04 },
             { platform: windows, arch: x86_64, os: windows-latest },
-            { platform: macos, arch: universal, os: macos-latest },
+            # { platform: macos, arch: universal, os: macos-latest },
+            
             # { platform: android, arch: x86_64, os: ubuntu-22.04 },
             # { platform: android, arch: x86_32, os: ubuntu-22.04 },
             # { platform: android, arch: arm64, os: ubuntu-22.04 },
@@ -51,11 +52,11 @@ jobs:
 
       # Build GDExtension (with caches)
 
-      - name: Restore .scons_cache
-        uses: ./godot-cpp/.github/actions/godot-cache-restore
-        with:
-          scons-cache: ${{ github.workspace }}/.scons-cache/
-          cache-name: ${{ matrix.target.platform }}_${{ matrix.target.arch }}_${{ matrix.target-type }}
+      # - name: Restore .scons_cache
+      #   uses: ./godot-cpp/.github/actions/godot-cache-restore
+      #   with:
+      #     scons-cache: ${{ github.workspace }}/.scons-cache/
+      #     cache-name: ${{ matrix.target.platform }}_${{ matrix.target.arch }}_${{ matrix.target-type }}
 
       - name: Build GDExtension
         shell: sh
@@ -64,11 +65,11 @@ jobs:
         run: |
           scons target=${{ matrix.target-type }} platform=${{ matrix.target.platform }} arch=${{ matrix.target.arch }}
 
-      - name: Save .scons_cache
-        uses: ./godot-cpp/.github/actions/godot-cache-save
-        with:
-          scons-cache: ${{ github.workspace }}/.scons-cache/
-          cache-name: ${{ matrix.target.platform }}_${{ matrix.target.arch }}_${{ matrix.target-type }}
+      # - name: Save .scons_cache
+      #   uses: ./godot-cpp/.github/actions/godot-cache-save
+      #   with:
+      #     scons-cache: ${{ github.workspace }}/.scons-cache/
+      #     cache-name: ${{ matrix.target.platform }}_${{ matrix.target.arch }}_${{ matrix.target-type }}
 
       # Clean up compilation files
       - name: Windows - Delete compilation files
@@ -78,12 +79,13 @@ jobs:
           Remove-Item bin/* -Include *.exp,*.lib,*.pdb -Force
 
       # Upload the build
+      # upload each built library as a single file
       - name: Upload Artifact
         uses: actions/upload-artifact@v7
         with:
           name: gdtoml-${{ matrix.target.platform }}-${{ matrix.target.arch }}-${{ matrix.target-type }}
           path: ${{ github.workspace }}/bin/**
-          # archive: false # prevents zipping each upload
+          archive: false # prevents zipping each upload
 
   # Merges all the build artifacts together into a single godot-cpp-template artifact.
   # If you comment out this step, all the builds will be uploaded individually.
@@ -94,8 +96,8 @@ jobs:
   #     - name: Merge Artifacts
   #       uses: actions/upload-artifact/merge@v7
   #       with:
-  #         name: godot-cpp-template
-  #         pattern: godot-cpp-template-*
+  #         name: gdtoml
+  #         pattern: gdtoml-*
   #         delete-merged: true
   
   release:

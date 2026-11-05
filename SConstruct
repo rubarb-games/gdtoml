@@ -9,7 +9,7 @@ target = ARGUMENTS.get("target", "template_debug")
 libname = "gdtoml"
 projectdir = "godot"
 
-localEnv = Environment(tools=["default"], PLATFORM="")
+localEnv = Environment(tools=["default"], PLATFORM="", ENV={'PATH': os.environ['PATH']})
 
 localEnv["target"] = target
 
