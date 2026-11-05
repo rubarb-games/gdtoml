@@ -1,7 +1,7 @@
 extends Node
 
 func enable_logging() -> bool:
-	return ProjectSettings.get_setting("gdtoml/logging") as bool
+	return ProjectSettings.get_setting("gdtoml/logging", false)
 
 func parse_file(p_reader: TomlReader, p_paths: Array[String]) -> int:
 	for path: String in p_paths:

@@ -1,6 +1,36 @@
 extends Node
 
 func _ready() -> void:
+	test_reader()
+	test_writer()
+
+func test_writer() -> void:
+	var writer: TomlWriter = TomlWriter.new()
+	
+	writer.set_string("settings.path", "file://filename.txt")
+	writer.set_bool("settings.enabled", true)
+	writer.set_int("settings.seed", 1704)
+	writer.set_float("settings.volume", 0.75)
+	
+	writer.set_bool("settings.graphics.vsync_enabled", false)
+	writer.set_bool("settings.list[1]", false)
+	
+	writer.set_array("letters", ["a", "b", "c"])
+	writer.set_array("letters", ["a", "b", "c", "d"]) # not allowed
+	writer.set_string("letters[3]", "d") # not supported
+	
+	writer.set_table("table", {
+		"a": 1,
+		"b": 2,
+	})
+	writer.set_string("table.c", "hallo")
+	
+	writer.set_array("numbers", []) # won't serialize when pruning
+	writer.set_table("empty", {}) # won't serialize when pruning
+	
+	print(writer.serialize())
+
+func test_reader() -> void:
 	var reader: TomlReader = TomlReader.new()
 	reader.enable_log(Toml.enable_logging())
 	
@@ -10,32 +40,42 @@ func _ready() -> void:
 		return
 	
 	exists(reader, "alone")
+	print("Alone: %s" % reader.get_bool("alone"))
+	exists(reader, "intvalue")
+	print("Intvalue: %s" % reader.get_int("intvalue"))
+	exists(reader, "something")
+	print("Something: %s" % reader.get_string("something", "ERR"))
+	#return
+	
 	exists(reader, "general")
 	exists(reader, "general.width")
 	exists(reader, "width")
 	
-	var general: Dictionary = reader.get_table("general")
-	print(general)
-	var audio: Dictionary = reader.get_table("general.audio")
-	print(audio)
+	print_table(reader, "general")
+	print_table(reader, "general.audio")
+	print_table(reader, "xxx") # should print nothing
 	
-	var general_err: Dictionary = reader.get_table("general_not_found")
-	print(general_err)
+	expect_arr(
+		reader.get_string_arr("general.plugins"),
+		["this", "that"],
+		"general.plugins"
+	)
 	
-	var plugins_1: Array[String] = reader.get_string_arr("general.plugins")
-	print(plugins_1)
+	print_table(reader, "level")
 	
-	var plugins_2: Array = reader.get_array("general.plugins")
-	print(plugins_2)
+	print_array(reader, "enemy")
+	expect_arr(
+		reader.get_array("enemy"),
+		[{"name":"Peasant"}, {"name":"Accountant"}],
+		"enemies"
+	)
 	
-	var level: Dictionary = reader.get_table("level")
-	print(level)
-	
-	var enemies: Array = reader.get_array("enemy")
-	print(enemies)
-	
-	var my_name: Dictionary = reader.get_table("my_name")
-	print(my_name)
+	print_table(reader, "my_name")
+	expect_table(
+		reader.get_table("my_name"),
+		{"first":"Thomas", "last":"Viktil"},
+		"my_name"
+	)
 	
 	expect_arr(
 		reader.get_array("general.random"),
@@ -62,6 +102,33 @@ func _ready() -> void:
 		["string"],
 		"general.random (string)"
 	)
+	
+	var keys: Array[String] = reader.get_table_keys("general")
+	print(keys)
+
+static func print_array(r: TomlReader, path: String) -> void:
+	var a: Array = r.get_array(path)
+	print("%s:\n%s" % [path, JSON.stringify(a, "  ")])
+
+static func print_table(r: TomlReader, path: String) -> void:
+	var d: Dictionary = r.get_table(path)
+	print("%s:\n%s" % [path, JSON.stringify(d, "  ")])
+
+static func expect_table(tbl: Dictionary, to_be: Dictionary, msg: String) -> void:
+	if tbl.keys().size() != to_be.keys().size():
+		printerr("%s are not equal" % msg)
+		return
+	
+	for key: Variant in tbl:
+		if not to_be.has(key):
+			printerr("%s are not equal" % msg)
+			return
+		
+		if tbl[key] != to_be[key]:
+			printerr("%s are not equal" % msg)
+			return
+	
+	print("%s are equal" % msg)
 
 static func expect_arr(arr: Array, to_be: Array, msg: String) -> void:
 	if arr.size() != to_be.size():
@@ -71,6 +138,7 @@ static func expect_arr(arr: Array, to_be: Array, msg: String) -> void:
 	for i: int in range(0, arr.size()):
 		if arr[i] != to_be[i]:
 			printerr("%s are not equal" % msg)
+			return
 	
 	print("%s are equal" % msg)
 

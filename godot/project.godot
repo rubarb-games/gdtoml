@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="test-cpp-scons"
+config/name="gdtoml"
 run/main_scene="uid://cmtajh5ywjmmr"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
@@ -27,6 +27,10 @@ window/stretch/aspect="expand"
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/gdtoml/plugin.cfg")
+
+[gdtoml]
+
+logging=true
 
 [physics]
 

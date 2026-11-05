@@ -6,6 +6,7 @@
 #include "godot_cpp/variant/dictionary.hpp"
 #include "godot_cpp/variant/variant.hpp"
 
+#define TOML_EXCEPTIONS 0
 #include "toml++/toml.hpp"
 #include <memory>
 
@@ -18,7 +19,7 @@ private:
     std::unique_ptr<toml::table> tbl;
 
     bool log_enabled;
-    void log(const std::string& p_msg) const;
+    void log(const std::string& p_msg);
 
 protected:
     static void _bind_methods();
@@ -28,19 +29,13 @@ public:
     ~TomlWriter() override = default;
 
     void enable_log(bool val);
-    String serialize();
+    String serialize(bool prune);
 
-    bool set_string(const String& p_key, const String& p_value);
-    bool set_int(const String& p_key, const int& p_value);
-    bool set_float(const String& p_key, const float& p_value);
-    bool set_bool(const String& p_key, const bool& p_value);
+    bool set_string(const String& p_path, const String& p_value);
+    bool set_int(const String& p_path, const int& p_value);
+    bool set_float(const String& p_path, const float& p_value);
+    bool set_bool(const String& p_path, const bool& p_value);
 
-    bool set_array(const String& p_key, const Array& p_array);
-    bool set_table(const String& p_key, const Dictionary& p_table);
-
-    bool append_to_array(const String& p_key, const Variant& p_value);
-    bool erase_from_array(const String& p_key, const Variant& p_value);
-    
-    bool remove(const String& p_key);
-    void prune();
+    bool set_array(const String& p_path, const Array& p_array);
+    bool set_table(const String& p_path, const Dictionary& p_table);
 };

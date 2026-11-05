@@ -7,3 +7,4 @@ src/**/*.os
 .temp
 .godot-editor
 compile_commands.json
+build/

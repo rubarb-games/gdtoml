@@ -1,11 +1,14 @@
 alone = true
+something = "elsec"
+intvalue = 1704
+
 # inline table
 my_name = { first = "Thomas", last = "Viktil" }
 
 [general]
 width = 100
 height = 200
-plugins = ["this", "that"]
+plugins = ["this", "that", 4]
 random = [1, 2.5, false, "string"]
 
 [general.audio]
@@ -25,4 +28,3 @@ name = "Peasant"
 
 [[enemy]]
 name = "Accountant"
-
