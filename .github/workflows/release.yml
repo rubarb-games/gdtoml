@@ -31,6 +31,33 @@ jobs:
 
     runs-on: ${{ matrix.target.os }}
     steps:
+
+      - name: Setup Python (for SCons)
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+
+      # - name: Setup Web dependencies
+      #   if: inputs.platform == 'web'
+      #   uses: mymindstorm/setup-emsdk@v14
+      #   with:
+      #     version: ${{ inputs.em-version }}
+      #     no-cache: true
+
+      # - name: Setup MinGW for Windows/MinGW build
+      #   if: inputs.platform == 'windows' && inputs.windows-compiler == 'mingw'
+      #   uses: egor-tensin/setup-mingw@v2
+      #   with:
+      #     version: ${{ inputs.mingw-version }}
+
+      - name: Setup SCons
+        shell: bash
+        run: |
+          python -c "import sys; print(sys.version)"
+          python -m pip install scons==${{ inputs.scons-version }}
+          scons --version
+
+
       # Clone this repository
       - name: Checkout
         uses: actions/checkout@v7
