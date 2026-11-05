@@ -128,7 +128,7 @@ env['SHLIBPREFIX'] = ''
 
 lib_filename = "{}{}{}".format(libname, suffix, env.subst('$SHLIBSUFFIX'))
 library = env.SharedLibrary(
-    "bin/{}/{}".format(env['platform'], lib_filename),
+    "bin/{}".format(lib_filename),
     source=sources,
 )
 
