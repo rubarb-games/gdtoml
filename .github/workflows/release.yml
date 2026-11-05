@@ -32,13 +32,17 @@ jobs:
     runs-on: ${{ matrix.target.os }}
     steps:
 
-      - name: Ensure MSVC
-        uses: ilammy/msvc-dev-cmd@v1
+      # Clone this repository
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          submodules: true
 
       - name: Setup Python (for SCons)
         uses: actions/setup-python@v5
         with:
-          python-version: 3.x
+          python-version: '3.14'
+          cache: 'pip'
 
       # - name: Setup Web dependencies
       #   if: inputs.platform == 'web'
@@ -54,18 +58,17 @@ jobs:
       #     version: ${{ inputs.mingw-version }}
 
       - name: Setup SCons
-        shell: bash
+        # shell: bash
         run: |
           python -c "import sys; print(sys.version)"
-          python -m pip install scons==4.4.0
+          python -m pip install --upgrade pip
+          python -m pip install scons==4.11.1
           scons --version
 
-
-      # Clone this repository
-      - name: Checkout
-        uses: actions/checkout@v7
+      - name: Install MSVC
+        uses: ilammy/msvc-dev-cmd@v1
         with:
-          submodules: true
+          arch: x64
 
       # # Add linux x86_32 toolchain
       # - name: Install multilib support
@@ -90,9 +93,9 @@ jobs:
       #     cache-name: ${{ matrix.target.platform }}_${{ matrix.target.arch }}_${{ matrix.target-type }}
 
       - name: Build GDExtension
-        shell: sh
-        env:
-          SCONS_CACHE: ${{ github.workspace }}/.scons-cache/
+        # shell: sh
+        # env:
+        #   SCONS_CACHE: ${{ github.workspace }}/.scons-cache/
         run: |
           scons target=${{ matrix.target-type }} platform=${{ matrix.target.platform }} arch=${{ matrix.target.arch }}
 
