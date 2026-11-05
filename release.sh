@@ -25,6 +25,6 @@ esac
 
 godot_editor="$(pwd)/${folder_godot_editor}/${exe_file}"
 
-scons target=template_release platform=linux arch=x86_64
+scons target=template_release platform=linux arch=x86_64 install
 
 ${godot_editor} --headless --quit --path "$(pwd)/godot/" --export-release "Linux" "../build/gdtoml.x86_64"

@@ -97,5 +97,5 @@ make_dir "$(pwd)/${folder_temp}"
 make_dir "$(pwd)/${folder_godot_editor}"
 download_editor ${version} ${os}
 
-scons target=template_debug platform=linux arch=x86_64
+scons target=template_debug platform=linux arch=x86_64 install
 ${godot_editor} -e --path "$(pwd)/godot/"
