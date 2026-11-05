@@ -30,6 +30,10 @@ jobs:
         # float-precision: [single]
 
     runs-on: ${{ matrix.target.os }}
+
+    permissions:
+      contents: read
+
     steps:
 
       # Clone this repository
@@ -39,7 +43,7 @@ jobs:
           submodules: true
 
       - name: Setup Python (for SCons)
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: '3.14'
           cache: 'pip'

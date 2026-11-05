@@ -5,11 +5,15 @@ import sys
 # from methods import print_error
 
 target = ARGUMENTS.get("target", "template_debug")
+platform = ARGUMENTS.get("platform", "linux")
 
 libname = "gdtoml"
 projectdir = "godot"
 
-localEnv = Environment(tools=["default", "msvc"], PLATFORM="", ENV={'PATH': os.environ['PATH']})
+if platform == "windows":
+    localEnv = Environment(tools=["msvc"], PLATFORM="", ENV={'PATH': os.environ['PATH']})
+else:
+    localEnv = Environment(tools=["default"], PLATFORM="", ENV={'PATH': os.environ['PATH']})
 
 localEnv["target"] = target
 
@@ -128,7 +132,13 @@ library = env.SharedLibrary(
     source=sources,
 )
 
+
+# INSTALL TO ADDONS FOLDER
+# =======================
+
 copy = env.Install("{}/addons/{}".format(projectdir, libname), library)
+Alias("install", copy)
+
 
 # COMPILE DB
 # =======================
@@ -136,9 +146,11 @@ copy = env.Install("{}/addons/{}".format(projectdir, libname), library)
 compdb = env.CompilationDatabase(
     "compile_commands.json",
 )
-
 Alias("compiledb", compdb)
 
 
-default_args = [library, copy]
-Default(*default_args)
+# DEFAULT COMMAND
+# =======================
+
+# default_args = [library, copy]
+Default(library)
