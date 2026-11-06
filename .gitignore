@@ -8,3 +8,6 @@ src/**/*.os
 .godot-editor
 compile_commands.json
 build/
+*.obj
+*.lib
+*.exp
