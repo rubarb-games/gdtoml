@@ -28,7 +28,6 @@ private:
 
     bool log_enabled;
     bool doc_ok() const;
-    bool _exists(const std::string& p_path) const;
 
     template<typename... Args>
     void log(fmt::format_string<Args...> format, Args&&... args) const {

@@ -61,22 +61,19 @@ bool TomlReader::doc_ok() const {
     return true;
 }
 
-bool TomlReader::_exists(const std::string& p_path) const {
+bool TomlReader::exists(const String& p_path) const {
     if (!doc_ok()) {
         return false;
     }
 
+    const std::string path = utils::to_str(p_path);
     // if (doc->at_path(p_path).node() == nullptr) {
-    if (doc->at_path(p_path).type() == toml::node_type::none) {
-        log("TOML document does not contain path '{}'.", p_path);
+    if (doc->at_path(path).type() == toml::node_type::none) {
+        log("TOML document does not contain path '{}'.", path);
         return false;
     }
 
     return true;
-}
-
-bool TomlReader::exists(const String& p_path) const {
-    return _exists(utils::to_str(p_path));
 }
 
 // String
