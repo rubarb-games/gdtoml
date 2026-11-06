@@ -164,7 +164,8 @@ static bool dictionary_to_toml(const Dictionary& dictionary, toml::table& toml_t
         bool is_string_key = key.get_type() == Variant::STRING || key.get_type() == Variant::STRING_NAME;
         if (!is_string_key) {
             // TOML does not support non-string keys
-            return false;
+            // Skip the key and continue to the next
+            continue;
         }
 
         std::string key_str = to_str(key);
