@@ -171,51 +171,39 @@ static bool dictionary_to_toml(const Dictionary& dictionary, toml::table& toml_t
         switch (value.get_type()) {
             case Variant::BOOL:
                 toml_table.insert(key_str, static_cast<bool>(value));
-                return true;
 
             case Variant::INT:
                 toml_table.insert(key_str, static_cast<int64_t>(value));
-                return true;
 
             case Variant::FLOAT:
                 toml_table.insert(key_str, static_cast<double>(value));
-                return true;
 
             case Variant::STRING:
-            case Variant::STRING_NAME:
-            {
+            case Variant::STRING_NAME: {
                 toml_table.insert(key_str, to_str(value));
-                return true;
             }
 
-            case Variant::DICTIONARY:
-            {
+            case Variant::DICTIONARY: {
                 toml::table nested;
 
-                if (!dictionary_to_toml(value, nested))
-                    return false;
-
-                toml_table.insert(key_str, std::move(nested));
-                return true;
+                if (dictionary_to_toml(value, nested)) {
+                    toml_table.insert(key_str, std::move(nested));
+                }
             }
 
-            case Variant::ARRAY:
-            {
+            case Variant::ARRAY: {
                 Array nested_array = value;
                 toml::array nested;
                 
                 for (int64_t i = 0; i < nested_array.size(); ++i) {
-                    if (!append_variant(nested, nested_array[i])) {
-                        return false;
+                    if (append_variant(nested, nested_array[i])) {
+                        toml_table.insert(key_str, std::move(nested));
                     }
                 }
-
-                toml_table.insert(key_str, std::move(nested));
-                return true;
             }
 
             default:
-                return false;
+                continue;
         }
     }
 
