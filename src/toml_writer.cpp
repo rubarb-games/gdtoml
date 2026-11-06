@@ -30,14 +30,6 @@ void TomlWriter::enable_log(const bool val) {
     log_enabled = val;
 }
 
-void TomlWriter::log(const std::string& p_msg) {
-    if (!log_enabled) {
-        return;
-    }
-    std::string s = fmt::sprintf("[gdtoml.toml_writer] {}", p_msg);
-    UtilityFunctions::print(utils::to_string(s));
-}
-
 String TomlWriter::serialize(bool prune = true) {
     if (prune) {
         tbl->prune();

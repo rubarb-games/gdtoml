@@ -8,6 +8,7 @@
 
 #define TOML_EXCEPTIONS 0
 #include "toml++/toml.hpp"
+
 #include <memory>
 
 using namespace godot;
@@ -17,9 +18,15 @@ class TomlWriter : public RefCounted {
 
 private:
     std::unique_ptr<toml::table> tbl;
-
     bool log_enabled;
-    void log(const std::string& p_msg);
+
+    template<typename... Args>
+    void log(fmt::format_string<Args...> format, Args&&... args) const {
+        if (!log_enabled) { return; }
+        std::string msg = fmt::format(format, std::forward<Args>(args)...);
+        std::string s = fmt::format("[gdtoml.toml_writer] {}", msg);
+        UtilityFunctions::print(utils::to_string(s));
+    }
 
 protected:
     static void _bind_methods();
