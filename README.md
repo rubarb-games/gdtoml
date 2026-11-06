@@ -131,7 +131,7 @@ var reader: TomlReader = TomlReader.new()
 
 ### enable_log(enable: bool)
 
-Set to true to turn on logging for this instance of TomlWriter. Logging will print all errors. Use the "gdbuild/logging" project setting to turn on and off logging globally. The Toml autoload has a function for getting the settings value. Use it like this:
+Set to true to turn on logging for this instance of TomlReader. Logging will print all errors. Use the "gdbuild/logging" project setting to turn on and off logging globally. The Toml autoload has a function for getting the settings value. Use it like this:
 
 ```gdscript
 var reader: TomlReader = TomlReader.new()
@@ -228,20 +228,86 @@ The plugins array will look like: `["forward", "backward"]`.
 
 ## TomlWriter API
 
-Coming...
+## Constructor
+
+The constructor has no parameters. It creates an instance of the TomlWriter. TomlWriter inherits from RefCounted, so Godot will manage the memory for you.
+
+## enable_log(enable: bool)
+
+Set to true to turn on logging for this instance of TomlWriter. Logging will print all errors. Use the "gdbuild/logging" project setting to turn on and off logging globally. The Toml autoload has a function for getting the settings value. Use it like this:
+
+```gdscript
+var writer: TomlWriter = TomlWriter.new()
+writer.enable_log(Toml.enable_logging())
+```
+
+## serialize(prune: bool) -> String
+
+Serializes all the values added to the document via the `set_` functions, to a Godot String. The String can be written to a file using Godot's FileAccess API. When `prune` is true, any empty arrays and tables will be discarded. Useful for outputting a clean and tidy TOML.
+
+## set_string(path: String, value: String) -> bool
+
+Set a String value at a given path. Any missing parts of the path will be created before adding the key.
+
+Returns true when the value was successfully set. In a later version, an error code will be returned, to inform you of why the value wasn't successfully set. Possible ways this function can fail:
+
+- The path ends with an array accessor. Paths such as `grandchild.parent[2]` is not supported (yet).
+- Could not create the path. Either because the path contains an array accessor, or one of the path elements is not a table.
+- The value already exists.
+
+```gdscript
+var writer: TomlWriter = TomlWriter.new()
+writer.set_string("grandparent.parent.child.name", "Bernard")
+```
+
+Will produce the following TOML:
+
+```toml
+[grandparent.parent.child]
+name = "Bernard"
+```
+
+If you later call `writer.set_string("grandparent.name", "Laverne")`, the TOML will look like this:
+
+```toml
+[grandparent]
+name = "Laverne"
+
+[grandparent.parent.child]
+name = "Bernard"
+```
+
+## set_int(path: String, value: int) -> bool
+
+Set an int value at a given path. See `set_string` for a more detailed description.
+
+## set_float(path: String, value: float) -> bool
+
+Set a float value at a given path. See `set_string` for a more detailed description.
+
+## set_bool(path: String, value: bool) -> bool
+
+Set a bool value at a given path. See `set_string` for a more detailed description.
+
+## set_array(path: String, value: Array) -> bool
+
+Insert an array at a given path. See `set_string` for a more detailed description.
+
+## set_table(path: String, value: Dictionary) -> bool
+
+Insert a table at a given path. See `set_string` for a more detailed description.
 
 ## Toml
 
-Coming...
+The Toml autoload registers with your project when you enable the gdtoml addon. It's purpose to give you some utility functions for making it easier to work with TomlWriter and TomlReader. It already has functions for:
 
-In the works.
- - [ ] Explain the API of Writer and Reader
- - [ ] How to extend Toml autoload with helpers
+- enable_logging() -> bool: Returns the value from "gdtoml/logging" in Project Settings.
+- parse_file(reader: TomlReader, paths: Array[String]) -> int: Loads and parses a TOML file.
+
+There are also a couple of example functions for working with Vectors. TOML does not carry any information about what data type each of the values represent in your project. A data type such as a Vector can be represented in several different ways. gdtoml does not make any decisions for you for how to interpret your data. Feel free to extend the Toml class with any functions you might need for reading and writing data types.
 
 # For development
 
-- init godot-cpp submodule
-`git submodule update --init --recursive`
-- build compile_commands.json
-`scons compiledb`
-- if you are using sublime, enable LSP
+The godot-cpp project is needed for letting gdtoml know about the Godot API. It's included as a git sub module, and must be initialized like this: `git submodule update --init --recursive`
+
+Depending on your choice of IDE, you might need to build the `compile_commands.json` file. Editors such as Sublime Text requires this file to give you code completion hints. Build the file like this: `scons compiledb`
