@@ -11,21 +11,21 @@ void TomlReader::_bind_methods() {
     godot::ClassDB::bind_method(D_METHOD("exists", "path"), &TomlReader::exists);
 
     godot::ClassDB::bind_method(D_METHOD("get_string", "path", "default"), &TomlReader::get_string, DEFVAL(""));
-    godot::ClassDB::bind_method(D_METHOD("get_string_arr", "path"), &TomlReader::get_string_arr);
+    godot::ClassDB::bind_method(D_METHOD("get_string_arr", "path", "default"), &TomlReader::get_string_arr, DEFVAL(TypedArray<String>{}));
 
     godot::ClassDB::bind_method(D_METHOD("get_int", "path", "default"), &TomlReader::get_int, DEFVAL(0));
-    godot::ClassDB::bind_method(D_METHOD("get_int_arr", "path"), &TomlReader::get_int_arr);
+    godot::ClassDB::bind_method(D_METHOD("get_int_arr", "path", "default"), &TomlReader::get_int_arr, DEFVAL(TypedArray<int64_t>{}));
 
     godot::ClassDB::bind_method(D_METHOD("get_float", "path", "default"), &TomlReader::get_float, DEFVAL(0.0));
-    godot::ClassDB::bind_method(D_METHOD("get_float_arr", "path"), &TomlReader::get_float_arr);
+    godot::ClassDB::bind_method(D_METHOD("get_float_arr", "path", "default"), &TomlReader::get_float_arr, DEFVAL(TypedArray<float>{}));
 
     godot::ClassDB::bind_method(D_METHOD("get_bool", "path", "default"), &TomlReader::get_bool, DEFVAL(false));
-    godot::ClassDB::bind_method(D_METHOD("get_bool_arr", "path"), &TomlReader::get_bool_arr);
+    godot::ClassDB::bind_method(D_METHOD("get_bool_arr", "path", "default"), &TomlReader::get_bool_arr, DEFVAL(TypedArray<bool>{}));
 
-    godot::ClassDB::bind_method(D_METHOD("get_array", "path"), &TomlReader::get_array);
+    godot::ClassDB::bind_method(D_METHOD("get_array", "path", "default"), &TomlReader::get_array, DEFVAL(Array{}));
 
-    godot::ClassDB::bind_method(D_METHOD("get_table", "path"), &TomlReader::get_table);
-    godot::ClassDB::bind_method(D_METHOD("get_table_keys", "path"), &TomlReader::get_table_keys);
+    godot::ClassDB::bind_method(D_METHOD("get_table", "path", "default"), &TomlReader::get_table, DEFVAL(Dictionary{}));
+    godot::ClassDB::bind_method(D_METHOD("get_table_keys", "path", "default"), &TomlReader::get_table_keys, DEFVAL(TypedArray<String>{}));
 }
 
 TomlReader::TomlReader() {
@@ -88,9 +88,9 @@ String TomlReader::get_string(const String& p_path, const String& p_default) con
     return utils::to_string(get_value(path, default_val));
 }
 
-TypedArray<String> TomlReader::get_string_arr(const String& p_path) const {
+TypedArray<String> TomlReader::get_string_arr(const String& p_path, const TypedArray<String>& p_default) const {
     if (!doc_ok()) {
-        return {};
+        return p_default;
     }
 
     const std::string& path = utils::to_str(p_path);
@@ -98,7 +98,7 @@ TypedArray<String> TomlReader::get_string_arr(const String& p_path) const {
 
     if (node.type() != toml::node_type::array) {
         log("Path '{}' was found, but it's not an array.", path);
-        return {};
+        return p_default;
     }
     
     TypedArray<String> array = {};
@@ -130,9 +130,9 @@ int64_t TomlReader::get_int(const String& p_path, const int64_t& p_default) cons
     return get_value(path, p_default).value();
 }
 
-TypedArray<int64_t> TomlReader::get_int_arr(const String& p_path) const {
+TypedArray<int64_t> TomlReader::get_int_arr(const String& p_path, const TypedArray<int64_t>& p_default) const {
     if (!doc_ok()) {
-        return {};
+        return p_default;
     }
 
     const std::string& path = utils::to_str(p_path);
@@ -140,7 +140,7 @@ TypedArray<int64_t> TomlReader::get_int_arr(const String& p_path) const {
 
     if (node.type() != toml::node_type::array) {
         log("Path '{}' was found, but it's not an array.", path);
-        return {};
+        return p_default;
     }
     
     TypedArray<int64_t> array = {};
@@ -171,9 +171,9 @@ float TomlReader::get_float(const String& p_path, const float& p_default) const 
     return get_value(path, p_default).value();
 }
 
-TypedArray<float> TomlReader::get_float_arr(const String& p_path) const {
+TypedArray<float> TomlReader::get_float_arr(const String& p_path, const TypedArray<float>& p_default) const {
     if (!doc_ok()) {
-        return {};
+        return p_default;
     }
 
     const std::string& path = utils::to_str(p_path);
@@ -181,7 +181,7 @@ TypedArray<float> TomlReader::get_float_arr(const String& p_path) const {
 
     if (node.type() != toml::node_type::array) {
         log("Path '{}' was found, but it's not an array.", path);
-        return {};
+        return p_default;
     }
     
     TypedArray<float> array = {};
@@ -212,9 +212,9 @@ bool TomlReader::get_bool(const String& p_path, const bool& p_default) const {
     return get_value(path, p_default).value();
 }
 
-TypedArray<bool> TomlReader::get_bool_arr(const String& p_path) const {
+TypedArray<bool> TomlReader::get_bool_arr(const String& p_path, const TypedArray<bool>& p_default) const {
     if (!doc_ok()) {
-        return {};
+        return p_default;
     }
 
     const std::string& path = utils::to_str(p_path);
@@ -222,7 +222,7 @@ TypedArray<bool> TomlReader::get_bool_arr(const String& p_path) const {
 
     if (node.type() != toml::node_type::array) {
         log("Path '{}' was found, but it's not an array.", path);
-        return {};
+        return p_default;
     }
     
     TypedArray<bool> array = {};
@@ -244,9 +244,9 @@ TypedArray<bool> TomlReader::get_bool_arr(const String& p_path) const {
 
 // array
 
-Array TomlReader::get_array(const String& p_path) const {
+Array TomlReader::get_array(const String& p_path, const Array& p_default) const {
     if (!doc_ok()) {
-        return {};
+        return p_default;
     }
 
     const std::string& path = utils::to_str(p_path);
@@ -254,7 +254,7 @@ Array TomlReader::get_array(const String& p_path) const {
 
     if (node.type() != toml::node_type::array) {
         log("Path '{}' was found, but it's not an array.", path);
-        return {};
+        return p_default;
     }
     
     Array array = {};
@@ -267,9 +267,9 @@ Array TomlReader::get_array(const String& p_path) const {
 
 // dictionary
 
-Dictionary TomlReader::get_table(const String& p_path) const {
+Dictionary TomlReader::get_table(const String& p_path, const Dictionary& p_default) const {
     if (!doc_ok()) {
-        return {};
+        return p_default;
     }
 
     const std::string& path = utils::to_str(p_path);
@@ -277,15 +277,15 @@ Dictionary TomlReader::get_table(const String& p_path) const {
 
     if (node.type() != toml::node_type::table) {
         log("Path '{}' was found, but it's not a table.", path);
-        return {};
+        return p_default;
     }
 
     return utils::to_dictionary(*node.as_table());
 }
 
-TypedArray<String> TomlReader::get_table_keys(const String& p_path) const {
+TypedArray<String> TomlReader::get_table_keys(const String& p_path, const TypedArray<String>& p_default) const {
     if (!doc_ok()) {
-        return {};
+        return p_default;
     }
 
     const std::string& path = utils::to_str(p_path);
@@ -293,7 +293,7 @@ TypedArray<String> TomlReader::get_table_keys(const String& p_path) const {
 
     if (node.type() != toml::node_type::table) {
         log("Path '{}' was found, but it's not a table.", path);
-        return {};
+        return p_default;
     }
 
     TypedArray<String> keys = {};

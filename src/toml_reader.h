@@ -83,19 +83,19 @@ public:
     bool exists(const String& p_path) const;
 
     String get_string(const String& p_path, const String& p_default = "") const;
-    TypedArray<String> get_string_arr(const String& p_path) const;
+    TypedArray<String> get_string_arr(const String& p_path, const TypedArray<String>& p_default = {}) const;
 
     int64_t get_int(const String& p_path, const int64_t& p_default = 0) const;
-    TypedArray<int64_t> get_int_arr(const String& p_path) const;
+    TypedArray<int64_t> get_int_arr(const String& p_path, const TypedArray<int64_t>& p_default = {}) const;
 
     float get_float(const String& p_path, const float& p_default = 0.0) const;
-    TypedArray<float> get_float_arr(const String& p_path) const;
+    TypedArray<float> get_float_arr(const String& p_path, const TypedArray<float>& p_default = {}) const;
 
     bool get_bool(const String& p_path, const bool& p_default = false) const;
-    TypedArray<bool> get_bool_arr(const String& p_path) const;
+    TypedArray<bool> get_bool_arr(const String& p_path, const TypedArray<bool>& p_default = {}) const;
 
-    Array get_array(const String& p_path) const;
+    Array get_array(const String& p_path, const Array& p_default = {}) const;
 
-    Dictionary get_table(const String& p_path) const;
-    TypedArray<String> get_table_keys(const String& p_path) const;
+    Dictionary get_table(const String& p_path, const Dictionary& p_default = {}) const;
+    TypedArray<String> get_table_keys(const String& p_path, const TypedArray<String>& p_default = {}) const;
 };
