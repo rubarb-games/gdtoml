@@ -9,6 +9,8 @@
 #define TOML_EXCEPTIONS 0
 #include "toml++/toml.hpp"
 
+#include "utils.h"
+
 #include <memory>
 
 using namespace godot;
