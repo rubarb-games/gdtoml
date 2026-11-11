@@ -7,6 +7,9 @@ func _ready() -> void:
 func test_writer() -> void:
 	var writer: TomlWriter = TomlWriter.new()
 	
+	writer.set_string("grandparent.parent.child.name", "Bernard")
+	writer.set_string("grandparent.name", "Laverne")
+	
 	writer.set_string("settings.path", "file://filename.txt")
 	writer.set_bool("settings.enabled", true)
 	writer.set_int("settings.seed", 1704)

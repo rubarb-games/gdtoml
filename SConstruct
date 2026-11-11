@@ -11,9 +11,11 @@ libname = "gdtoml"
 projectdir = "godot"
 
 if platform == "windows":
-    localEnv = Environment(tools=["msvc"], PLATFORM="", ENV={'PATH': os.environ['PATH']})
+    # localEnv = Environment(tools=["msvc"], PLATFORM="", ENV={'PATH': os.environ['PATH']})
+    localEnv = Environment(tools=["msvc"], PLATFORM="")
 else:
-    localEnv = Environment(tools=["default"], PLATFORM="", ENV={'PATH': os.environ['PATH']})
+    # localEnv = Environment(tools=["default"], PLATFORM="", ENV={'PATH': os.environ['PATH']})
+    localEnv = Environment(tools=["default"], PLATFORM="")
 
 localEnv["target"] = target
 
@@ -92,7 +94,7 @@ localEnv["build_profile"] = "build_profile.json"
 env = localEnv.Clone()
 
 if not (os.path.isdir("godot-cpp") and os.listdir("godot-cpp")):
-    print_error("""godot-cpp is not available within this folder, as Git submodules haven't been initialized.
+    print("""godot-cpp is not available within this folder, as Git submodules haven't been initialized.
 Run the following command to download godot-cpp:
 
     git submodule update --init --recursive""")

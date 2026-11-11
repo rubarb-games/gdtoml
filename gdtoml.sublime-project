@@ -11,7 +11,8 @@
             "name": "SCons Debug",
             "cmd": [
                 "scons",
-                "target=template_debug"
+                "target=template_debug",
+                "install"
             ],
             "working_dir": "$project_path",
             "file_regex": "^(.*?):([0-9]+):([0-9]+): (.*)$"
@@ -20,7 +21,8 @@
             "name": "SCons Release",
             "cmd": [
                 "scons",
-                "target=template_release"
+                "target=template_release",
+                "install"
             ],
             "working_dir": "$project_path",
             "file_regex": "^(.*?):([0-9]+):([0-9]+): (.*)$"

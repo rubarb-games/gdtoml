@@ -82,8 +82,12 @@ case $(uname | tr '[:upper:]' '[:lower:]') in
   darwin*)
     die "macOS not supported yet. Cannot continue"
     ;;
-  msys*)
+  mingw*)
   	os="windows"
+    exe_file="Godot_v${version}_win64.exe"
+    ;;
+  msys*)
+    os="windows"
     exe_file="Godot_v${version}_win64.exe"
     ;;
   *)
@@ -97,5 +101,5 @@ make_dir "$(pwd)/${folder_temp}"
 make_dir "$(pwd)/${folder_godot_editor}"
 download_editor ${version} ${os}
 
-scons target=template_debug platform=linux arch=x86_64 install
+scons target=template_debug platform=${os} arch=x86_64 install
 ${godot_editor} -e --path "$(pwd)/godot/"
