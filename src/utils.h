@@ -159,11 +159,6 @@ static bool dictionary_to_toml(const Dictionary& dictionary, toml::table& toml_t
     
     for (int64_t i = 0; i < keys.size(); ++i) {
         Variant key = keys[i];
-        
-        if (key.get_type() != Variant::STRING && key.get_type() != Variant::STRING_NAME) {
-            // TOML does not support non-string keys
-            return false;
-        }
 
         if (!insert_variant(toml_table, to_str(key), dictionary[key])) {
             return false;
