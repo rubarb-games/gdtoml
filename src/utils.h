@@ -160,13 +160,6 @@ static bool dictionary_to_toml(const Dictionary& dictionary, toml::table& toml_t
     for (int64_t i = 0; i < keys.size(); ++i) {
         Variant key = keys[i];
         Variant value = dictionary[key];
-        
-        bool is_string_key = key.get_type() == Variant::STRING || key.get_type() == Variant::STRING_NAME;
-        if (!is_string_key) {
-            // TOML does not support non-string keys
-            // Skip the key and continue to the next
-            continue;
-        }
 
         std::string key_str = to_str(key);
         switch (value.get_type()) {
