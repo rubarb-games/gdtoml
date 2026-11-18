@@ -4,6 +4,7 @@ import sys
 
 # from methods import print_error
 
+build_dir = os.environ.get("ARTIFACT_DIR", "bin")
 target = ARGUMENTS.get("target", "template_debug")
 platform = ARGUMENTS.get("platform", "linux")
 
@@ -128,9 +129,13 @@ suffix = env['suffix'].replace(".dev", "").replace(".universal", "")
 # remove the lib prefix
 env['SHLIBPREFIX'] = ''
 
+# Ensure the output directory exists.
+os.makedirs(build_dir, exist_ok=True)
+
 lib_filename = "{}{}{}".format(libname, suffix, env.subst('$SHLIBSUFFIX'))
 library = env.SharedLibrary(
-    "bin/{}".format(lib_filename),
+    target=os.path.join(build_dir, lib_filename),
+    #"{}/{}".format(build_dir, lib_filename),
     source=sources,
 )
 
